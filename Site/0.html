@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <style>
+        /* إعدادات الخلفية */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #12020a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .cake-container {
+            position: relative;
+            margin-top: 100px;
+        }
+
+        /* 1. الكعكة والطبقات */
+        .cake-base {
+            width: 280px;
+            height: 140px;
+            background: linear-gradient(to bottom, 
+                #3a1c0d 0%, #3a1c0d 25%, 
+                #ff8da1 25%, #ff8da1 35%, 
+                #3a1c0d 35%, #3a1c0d 65%, 
+                #ff8da1 65%, #ff8da1 75%, 
+                #3a1c0d 75%, #3a1c0d 100%);
+            border-radius: 10px 10px 20px 20px;
+            position: relative;
+            opacity: 0;
+            transform: scale(0);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5), 0 20px 40px rgba(0,0,0,0.6);
+            animation: popIn 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards;
+            z-index: 1;
+        }
+
+        /* 2. الكريمة */
+        .icing-container {
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            width: 300px;
+            height: 160px;
+            z-index: 2;
+        }
+
+        .icing-top {
+            width: 300px;
+            height: 45px;
+            background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+            border-radius: 25px;
+            opacity: 0;
+            transform: translateY(-30px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            animation: slideDownCream 0.8s ease 1.7s forwards;
+        }
+
+        .drip {
+            position: absolute;
+            background: linear-gradient(to bottom, #f0f0f0, #ffffff);
+            border-radius: 0 0 25px 25px;
+            top: 35px;
+            opacity: 0;
+            box-shadow: 2px 5px 5px rgba(0,0,0,0.1);
+            transform-origin: top;
+        }
+
+        .drip-1 { left: 20px; width: 22px; animation: flowDrip 1.5s ease 2.3s forwards; --drip-height: 50px; }
+        .drip-2 { left: 70px; width: 26px; animation: flowDrip 2.2s ease 2.5s forwards; --drip-height: 90px; }
+        .drip-3 { left: 125px; width: 20px; animation: flowDrip 1.8s ease 2.4s forwards; --drip-height: 60px; }
+        .drip-4 { left: 180px; width: 28px; animation: flowDrip 2.5s ease 2.7s forwards; --drip-height: 100px; }
+        .drip-5 { left: 240px; width: 22px; animation: flowDrip 1.9s ease 2.6s forwards; --drip-height: 45px; }
+
+        /* 3. الكرز الواقعي (تم التعديل ليكونوا في خط أفقي مستقيم) */
+        .cherries {
+            position: absolute;
+            top: 0;
+            left: 0;
+            rotate: 90;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            opacity: 0;
+            pointer-events: none;
+            animation: dropCherries 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 3.5s forwards;
+        }
+
+        .cherry-wrapper {
+            position: absolute;
+        }
+        
+        /* ضبط أماكن الكرز في خط مستقيم ومتباعد */
+        .cw-1 { top: -30px; left: 10px; }
+        .cw-2 { top: -30px; left: 240px; }
+        .cw-3 { top: -30px; left: 140px ; }
+        .cw-3 { top: -30px; left: 110px ; }
+
+        .cherry {
+            width: 26px;
+            height: 26px;
+            background: radial-gradient(circle at 30% 30%, #ff4b4b 0%, #cc0000 40%, #5a0000 100%);
+            border-radius: 50%;
+            box-shadow: 2px 4px 6px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .cherry::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 5px;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+        }
+
+        .stem {
+            position: absolute;
+            top: -18px;
+            left: 12px;
+            width: 3px;
+            height: 22px;
+            background: #2e8b57;
+            border-radius: 2px;
+            transform: rotate(15deg);
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* 4. الشموع والنار */
+        .candles {
+            display: flex;
+            justify-content: center;
+            gap: 45px;
+            position: absolute;
+            top: -95px;
+            width: 100%;
+            opacity: 0;
+            z-index: 4;
+            animation: fadeInCandles 1s ease 4.5s forwards;
+        }
+
+        .candle {
+            width: 14px;
+            height: 65px;
+            background: repeating-linear-gradient(45deg, #ffffff, #ffffff 6px, #ff4b8b 6px, #ff4b8b 12px);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: inset -3px 0 5px rgba(0,0,0,0.1), 2px 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .flame {
+            width: 18px;
+            height: 30px;
+            background: radial-gradient(ellipse at bottom, #ffee00 0%, #ff5700 100%);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -34px;
+            left: -2px;
+            box-shadow: 0 0 15px #ff7700, 0 0 30px #ffcc00;
+            animation: flicker 0.6s infinite alternate ease-in-out;
+            transform-origin: bottom center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .flame.extinguished {
+            opacity: 0 !important;
+            transform: scale(0) translateY(-20px) !important;
+            animation: none !important;
+            box-shadow: none !important;
+        }
+
+        /* 5. النص والزر */
+        .birthday-text {
+            color: #ffffff;
+            font-size: 3.2rem;
+            text-align: center;
+            margin-top: 80px;
+            margin-bottom: 20px;
+            opacity: 0;
+            font-weight: bold;
+            text-shadow: 0 0 15px #ff4b8b, 0 0 30px #ff4b8b;
+            animation: fadeInText 2s ease 5.5s forwards;
+        }
+
+        .blow-btn {
+            background-color: #ff4b8b;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 75, 139, 0.4);
+            opacity: 0;
+            /* منع الزر من التفاعل قبل ظهوره */
+            pointer-events: none; 
+            animation: fadeInBtn 1s ease 7s forwards;
+            transition: transform 0.2s, background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .blow-btn:hover {
+            transform: scale(1.05);
+            background-color: #ff2a75;
+        }
+
+        /* --- الحركات --- */
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideDownCream {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes flowDrip {
+            0% { height: 10px; opacity: 0; }
+            20% { opacity: 1; }
+            100% { height: var(--drip-height); opacity: 1; }
+        }
+
+        @keyframes dropCherries {
+            0% { transform: translateY(-50px) scale(0); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeInCandles {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInText {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* حركة مخصصة للزر ليصبح قابلاً للضغط فقط بعد ظهوره */
+        @keyframes fadeInBtn {
+            0% { opacity: 0; transform: scale(0.9); pointer-events: none; }
+            100% { opacity: 1; transform: scale(1); pointer-events: auto; }
+        }
+
+        @keyframes flicker {
+            0% { transform: rotate(-3deg) scaleX(0.9); }
+            100% { transform: rotate(3deg) scaleX(1.05); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cake-container">
+        <div class="candles">
+            <div class="candle"><div class="flame"></div></div>
+            <div class="candle"><div class="flame"></div></div>
+            <div class="candle"><div class="flame"></div></div>
+        </div>
+
+        <div class="cherries">
+            <div class="cherry-wrapper cw-1"><div class="stem"></div><div class="cherry"></div></div>
+            <div class="cherry-wrapper cw-2"><div class="stem"></div><div class="cherry"></div></div>
+            <div class="cherry-wrapper cw-3"><div class="stem"></div><div class="cherry"></div></div>
+        </div>
+        
+        <div class="cake-base">
+            <div class="icing-container">
+                <div class="icing-top"></div>
+                <div class="drip drip-1"></div>
+                <div class="drip drip-2"></div>
+                <div class="drip drip-3"></div>
+                <div class="drip drip-4"></div>
+                <div class="drip drip-5"></div>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="birthday-text">Happy Birthday My love 💖</h1>
+    <button id="blowBtn" class="blow-btn">أطفئ الشموع 💨</button>
+
+    <script>
+        document.getElementById('blowBtn').addEventListener('click', function() {
+            const flames = document.querySelectorAll('.flame');
+            
+            flames.forEach(flame => {
+                flame.classList.add('extinguished');
+            });
+            
+            this.innerHTML = "تمنى أمنية! ✨";
+            this.style.backgroundColor = "#2e8b57"; 
+            this.style.cursor = "default";
+            this.disabled = true; 
+        });
+    </script>
+
+</body>
+</html>
